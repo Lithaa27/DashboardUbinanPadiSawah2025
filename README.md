@@ -1,1 +1,322 @@
 # DashboardUbinanPadiSawah2025
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+<title>Dashboard Ubinan Komoditas Padi Sawah Tahun 2025</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+font-family: Arial, Helvetica, sans-serif;
+background:#f4f6f9;
+margin:40px;
+}
+
+h1{
+text-align:center;
+margin-bottom:5px;
+}
+
+.subtitle{
+text-align:center;
+color:#666;
+margin-bottom:30px;
+}
+
+/* KPI */
+
+.kpi-container{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:15px;
+margin-bottom:25px;
+}
+
+.kpi{
+background:white;
+padding:18px;
+border-radius:10px;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+text-align:center;
+}
+
+.kpi h2{
+margin:0;
+font-size:24px;
+color:#2c3e50;
+}
+
+.kpi p{
+margin-top:5px;
+color:#777;
+font-size:13px;
+}
+
+/* GRID CHART */
+
+.container{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:30px;
+}
+
+.chart-box{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+.chart-full{
+grid-column:span 2;
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+.note{
+margin-top:10px;
+font-size:13px;
+color:#555;
+}
+
+.insight-box{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+margin-top:30px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>Dashboard Ubinan Komoditas Padi Sawah Tahun 2025</h1>
+<p class="subtitle">Perbandingan Produktivitas, Hasil Panen, dan Luas Lahan Berdasarkan Subground</p>
+
+<div class="kpi-container">
+
+<div class="kpi">
+<h2>1116.10</h2>
+<p>Produktivitas Rata-rata</p>
+</div>
+
+<div class="kpi">
+<h2>1728.70 kg</h2>
+<p>Total Hasil Panen</p>
+</div>
+
+<div class="kpi">
+<h2>1.122.869 m²</h2>
+<p>Total Luas Lahan</p>
+</div>
+
+<div class="kpi">
+<h2>21</h2>
+<p>Jumlah Kecamatan</p>
+</div>
+
+</div>
+
+
+<div class="container">
+
+<div class="chart-box">
+<h3>Produktivitas Ubinan per Subground</h3>
+<canvas id="produktivitas"></canvas>
+</div>
+
+<div class="chart-box">
+<h3>Total Hasil Panen per Subground</h3>
+<canvas id="hasil"></canvas>
+</div>
+
+<div class="chart-box">
+<h3>Total Luas Lahan Sampel per Subground</h3>
+<canvas id="luas"></canvas>
+<div class="note">
+Catatan: Luas lahan sampel ubinan menggunakan ukuran <b>6,25 m²</b>.
+</div>
+</div>
+
+<div class="chart-box">
+<h3>Kontribusi Hasil Panen per Subground</h3>
+<canvas id="pieHasil"></canvas>
+</div>
+
+</div>
+
+
+<div class="chart-full">
+<h3>Perbandingan Hasil Ubinan per Kecamatan Berdasarkan Subground</h3>
+<canvas id="kecamatan"></canvas>
+</div>
+
+
+<div class="chart-full">
+<h3>Perbandingan Luas Lahan Sampel per Kecamatan Berdasarkan Subground</h3>
+<canvas id="luasKecamatan"></canvas>
+<div class="note">
+NB: Luas sampel ubinan setiap plot adalah <b>6,25 m²</b>.
+</div>
+</div>
+
+
+<div class="chart-full">
+<h3>Perbandingan Produktivitas Ubinan per Kecamatan Berdasarkan Subground</h3>
+<canvas id="produktKecamatan"></canvas>
+</div>
+
+
+<div class="chart-full">
+<h3>Top 10 Kecamatan Berdasarkan Total Hasil Ubinan</h3>
+<canvas id="topKecamatan"></canvas>
+</div>
+
+
+<div class="insight-box">
+
+<h3>Insight Data Ubinan</h3>
+<ul id="insightList"></ul>
+
+</div>
+
+
+
+<script>
+
+const triwulan=["Triwulan 1","Triwulan 2","Triwulan 3"]
+
+const produktivitas=[1382.94,1146.95,818.42]
+const hasil=[790.53,580.46,357.71]
+const luas=[450932,397612,274325]
+
+const kecamatan=[
+"Bandar Kedungmulyo","Perak","Gudo","Diwek","Ngoro","Mojowarno",
+"Bareng","Wonosalam","Mojoagung","Sumobito","Jogoroto","Peterongan",
+"Jombang","Megaluh","Tembelang","Kesamben","Kudu","Ngusikan",
+"Ploso","Kabuh","Plandaan"
+]
+
+const triwulan1=[14.12,40.29,65.38,39.98,15.40,129.14,35.74,0.00,79.09,16.01,25.23,0.00,12.96,0.00,0.00,11.05,66.11,80.70,16.33,37.57,105.45]
+const triwulan2=[42.09,11.56,26.98,15.76,15.43,102.18,47.52,16.95,31.22,71.58,11.25,34.95,34.17,0.00,54.77,17.71,6.68,10.57,5.53,0.00,23.61]
+const triwulan3=[10.62,9.08,13.24,0.00,8.79,64.43,19.94,15.19,20.13,14.98,0.00,0.00,36.06,56.01,35.02,35.10,4.03,0.00,10.56,0.00,4.55]
+
+const luas_tw1=[4550,3700,68350,40750,4940,67600,19600,0,54600,7700,20582,0,37800,0,0,7000,21770,30460,4200,19330,38000]
+const luas_tw2=[24120,2430,8615,9380,12685,84000,24680,9500,21700,41059,8840,19820,56400,0,50890,7980,2240,5600,2100,0,5573]
+const luas_tw3=[3380,1830,3100,0,3455,42000,10230,16100,9800,22200,0,0,69300,25130,23800,37700,2100,0,2800,0,1400]
+
+const prod_tw1=[10.68,10.35,217.58,127.22,15.31,212.40,50.11,0.00,191.07,25.84,49.04,0.00,102.06,0.00,0.00,23.98,76.24,104.84,14.29,58.16,93.80]
+const prod_tw2=[66.71,5.75,24.37,32.82,31.09,275.00,56.64,25.21,69.75,124.15,16.79,52.87,154.07,0.00,144.96,22.08,4.71,18.64,7.26,0.00,14.07]
+const prod_tw3=[11.38,5.15,8.62,0.00,9.53,130.89,31.56,38.25,31.31,69.28,0.00,0.00,231.02,63.56,66.39,102.98,5.28,0.00,9.24,0.00,3.98]
+
+
+new Chart(document.getElementById("produktivitas"),{
+type:'bar',
+data:{labels:["Subground 1","Subground 2","Subground 3"],datasets:[{label:"Produktivitas",data:produktivitas}]}
+})
+
+new Chart(document.getElementById("hasil"),{
+type:'line',
+data:{labels:["Subground 1","Subground 2","Subground 3"],datasets:[{label:"Total Hasil Panen",data:hasil}]}
+})
+
+new Chart(document.getElementById("luas"),{
+type:'bar',
+data:{labels:["Subground 1","Subground 2","Subground 3"],datasets:[{label:"Total Luas Lahan",data:luas}]}
+})
+
+new Chart(document.getElementById("pieHasil"),{
+type:'pie',
+data:{
+labels:["Subground 1","Subground 2","Subground 3"],
+datasets:[{data:hasil,backgroundColor:["#3498db","#2ecc71","#f39c12"]}]
+}
+})
+
+new Chart(document.getElementById("kecamatan"),{
+type:'bar',
+data:{
+labels:kecamatan,
+datasets:[
+{label:"Subground 1",data:triwulan1},
+{label:"Subground 2",data:triwulan2},
+{label:"Subground 3",data:triwulan3}
+]
+}
+})
+
+new Chart(document.getElementById("luasKecamatan"),{
+type:'bar',
+data:{
+labels:kecamatan,
+datasets:[
+{label:"Subground 1",data:luas_tw1},
+{label:"Subground 2",data:luas_tw2},
+{label:"Subground 3",data:luas_tw3}
+]
+}
+})
+
+new Chart(document.getElementById("produktKecamatan"),{
+type:'bar',
+data:{
+labels:kecamatan,
+datasets:[
+{label:"Subground 1",data:prod_tw1},
+{label:"Subground 2",data:prod_tw2},
+{label:"Subground 3",data:prod_tw3}
+]
+}
+})
+
+let totalHasil = kecamatan.map((k,i)=>({
+nama:k,
+total:triwulan1[i]+triwulan2[i]+triwulan3[i]
+}))
+
+let top10=[...totalHasil].sort((a,b)=>b.total-a.total).slice(0,10)
+
+new Chart(document.getElementById("topKecamatan"),{
+type:'bar',
+data:{
+labels:top10.map(x=>x.nama),
+datasets:[{
+label:"Total Hasil Ubinan",
+data:top10.map(x=>x.total),
+backgroundColor:"#3498db"
+}]
+}
+})
+
+let insight=document.getElementById("insightList")
+
+let maxHasil=totalHasil.reduce((a,b)=>a.total>b.total?a:b)
+
+let totalProd=kecamatan.map((k,i)=>({
+nama:k,
+total:prod_tw1[i]+prod_tw2[i]+prod_tw3[i]
+}))
+
+let maxProd=totalProd.reduce((a,b)=>a.total>b.total?a:b)
+
+let triwulanMax=hasil.indexOf(Math.max(...hasil))
+
+insight.innerHTML+=`<li>Kecamatan dengan total hasil ubinan padi sawah tertinggi adalah <b>${maxHasil.nama}</b>.</li>`
+insight.innerHTML+=`<li>Kecamatan dengan total produktivitas ubinan tertinggi adalah <b>${maxProd.nama}</b>.</li>`
+insight.innerHTML+=`<li>Hasil panen tertinggi terjadi pada <b>Subground ${triwulanMax+1}</b>.</li>`
+insight.innerHTML+=`<li>Dashboard ini menganalisis data ubinan padi sawah dari <b>21 kecamatan</b> berdasarkan periode Subground.</li>`
+
+</script>
+
+</body>
+</html>
